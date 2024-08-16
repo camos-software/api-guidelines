@@ -263,7 +263,7 @@ The HTTP operations dictate how your API behaves. The URL of an API, along with 
 
 If possible, APIs SHOULD use resource-based designs with standard HTTP methods rather than operation resources. Operation resources are either functions or actions. According to [OData standards](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#_Toc31359009), a function represents an operation that returns a single instance or collection of instances of any type and doesn’t have an observable side effect. An action might have side effects and might return a result represented as a single entity or collection of any type.
 
-|  Microsoft Graph rules for modeling behavior                     |
+|  Microsoft Graph rules for behavior modeling                     |
 |------------------------------------------------------------------|
 | :heavy_check_mark: **MUST** use POST to create new entities in insertable entity sets or collections.<BR>This approach requires the service to produce a system-generated key, or for a caller to provide a key in the request payload. |
 | :ballot_box_with_check: **SHOULD** additionally use PATCH to create new entities in insertable entity sets or collections.<BR>This [Upsert](./patterns/upsert.md) approach requires the caller to provide a key in the request URL. |
