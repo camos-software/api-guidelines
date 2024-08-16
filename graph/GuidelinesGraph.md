@@ -275,7 +275,7 @@ If possible, APIs SHOULD use resource-based designs with standard HTTP methods r
 
 Operation resources MUST have a binding parameter that matches the type of the bound resource. In addition, both actions and functions support overloading, meaning an API definition might contain multiple actions or functions with the same name.
 
-For an additional list of standard HTTP methods, see the [RFC7230](https://www.rfc-editor.org/rfc/rfc9112)).
+For an additional list of standard HTTP methods, see the [RFC7231 Hypertext Transfer Protocol](https://www.rfc-editor.org/rfc/rfc7231).
 
 ### Error handling
 
