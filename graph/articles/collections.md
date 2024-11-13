@@ -48,7 +48,7 @@ GET https://graph.microsoft.com/beta/teamwork/devices/0f3ce432-e432-0f3c-32e4-3c
   "value": {
     "@odata.type": "#microsoft.graph.teamworkDevice",
     "id": "0f3ce432-e432-0f3c-32e4-3c0f32e43c0f",
-    "deviceType": "CollaborationBar",
+    "deviceType": "CollaborationBar",371
     "hardwareDetail": {
       "serialNumber": "0189",
       "uniqueId": "5abcdefgh",
@@ -370,7 +370,7 @@ The model can be updated to have two collections side-by-side:
 ```
 Clients will now be able to refer to individual `keyCredential`s using `keyId` as a key, and they can now remove those `keyCredential`s using `DELETE` requests:
 ```http
-DELETE /applications/{applicationId}/keyCredentials/{some_keyId}
+DELETE /applications/{applicationId}/keyCredentialsAsEntities/{some_keyId}
 ```
 ```http
 HTTP/1.1 204 No Content
