@@ -321,77 +321,79 @@ Content-Type: application/json
 
 Collections of entity types are generally preferable to collections of structual types because collections of structural types must be updated as a single unit, meaning that they are overwritten entirely by new contents, rather than be updated relative to the existing contents. 
 Sometimes, structural collection properties are added to a type and then scenarios are discovered later that require a collection of entity types.
-Take the following model with an entity type `foo` that has a collection of `bar`s:
+Take the following model with an entity type `application` that has a collection of `keyCredential`s:
 
 ```xml
-<EntityType Name="foo">
+<EntityType Name="application">
   <Key>
     <PropertyRef Name="id" />
   </Key>
   <Property Name="id" Type="Edm.String" Nullable="false" />
-  <Property Name="bars" Type="Collection(self.bar)" />
+  <Property Name="keyCredentials" Type="Collection(self.keyCredential)" />
+  ...
 </EntityType>
 
-<ComplexType Name="bar">
-  <Property Name="prop1" Type="Edm.String" />
-  <Property Name="prop2" Type="Edm.String" />
+<ComplexType Name="keyCredential">
+  <Property Name="keyId" Type="Edm.Guid" />
+  <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
+  ...
 </ComplexType>
 ```
-and a scenario arises that requires, for example, to remove individual `bar`s from the collection. 
+and a scenario arises that requires, for example, to remove individual `keyCredential`s from the collection. 
 There are two options forward: //// TODO do we want to offer both options, or just one?
 
 ### 11.1 Side-by-side collection properties
 
 The model can be updated to have two collections side-by-side:
 ```diff
-<EntityType Name="foo">
+<EntityType Name="application">
   <Key>
     <PropertyRef Name="id" />
   </Key>
   <Property Name="id" Type="Edm.String" Nullable="false" />
-  <Property Name="bars" Type="Collection(self.bar)" />
-+ <NavigationProperty Name="barsAsEntities" Type="Collection(self.barAsEntity)" ContainsTarget="true" />
+  <Property Name="keyCredentials" Type="Collection(self.keyCredential)" />
++ <NavigationProperty Name="keyCredentialsAsEntities" Type="Collection(self.keyCredentialAsEntity)" ContainsTarget="true" />
 </EntityType>
 
-<ComplexType Name="bar">
-  <Property Name="prop1" Type="Edm.String" />
-  <Property Name="prop2" Type="Edm.String" />
+<ComplexType Name="keyCredential">
+  <Property Name="keyId" Type="Edm.Guid" />
+  <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
 </ComplexType>
 
-+<EntityType Name="barAsEntity">
++<EntityType Name="keyCredentialAsEntity">
 + <Key>
-+   <PropertyRef Name="prop1" />
++   <PropertyRef Name="keyId" />
 + </Key>
-+ <Property Name="prop1" Type="Edm.String" />
-+ <Property Name="prop2" Type="Edm.String" />
++ <Property Name="keyId" Type="Edm.Guid" />
++ <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
 +</EntityType>
 ```
-Clients will now be able to refer to individual `bar`s using `prop1` as a key, and they can now remove those `bar`s using `DELETE` requests:
+Clients will now be able to refer to individual `keyCredential`s using `keyId` as a key, and they can now remove those `keyCredential`s using `DELETE` requests:
 ```http
-DELETE /foos/{fooId}/bars/{some_prop1}
+DELETE /applications/{applicationId}/keyCredentials/{some_keyId}
 ```
 ```http
 HTTP/1.1 204 No Content
 ```
-The expectation is that `bars` and `barsAsEntities` are treated as two "views" into the same data.
+The expectation is that `keyCredentials` and `keyCredentialsAsEntities` are treated as two "views" into the same data.
 To meet this expectation, workloads must:
-1. Keep the properties consistent between `bar` and `barAsEntity`.
+1. Keep the properties consistent between `keyCredential` and `keyCredentialAsEntity`.
 Any changes to one type must be reflected in the other type.
 2. Reject requests that update both collections at the same time.
-A request that adds an item to `barsAsEntities` while replacing the content of `bars` must rejected with a `400`, for example:
+A request that adds an item to `keyCredentialsAsEntities` while replacing the content of `keyCredentials` must rejected with a `400`, for example:
 ```http
-PATCH /foos/{fooId}
+PATCH /applications/{applicationId}
 {
-  "bars": [
+  "keyCredentials": [
     {
-      "prop1": "some value",
-      "prop2": "another value"
+      "keyId": "10000000-0000-0000-0000-000000000000",
+      "endDateTime": "2012-12-03T07:16:23Z"
     }
   ],
-  "barsAsEntities@delta": [
+  "keyCredentialsAsEntities@delta": [
     {
-      "prop1": "a key value",
-      "prop2": "some new value"
+      "keyId": "20000000-0000-0000-0000-000000000000",
+      "endDateTime": "2012-12-03T07:16:23Z"
     }
   ]
 }
@@ -401,7 +403,7 @@ HTTP/1.1 400 Bad Request
 {
   "error": {
     "code": "badRequest",
-    "message": "'bars' and 'barsAsEntities' cannot be updated in the same request.",
+    "message": "'keyCredentials' and 'keyCredentialsAsEntities' cannot be updated in the same request.",
 }
 ```
 
@@ -412,52 +414,53 @@ TODO implement this in WebApi
 
 The model can be updated to simply switch the complex type for an entity type:
 ```diff
-<EntityType Name="foo">
+<EntityType Name="application">
   <Key>
     <PropertyRef Name="id" />
   </Key>
   <Property Name="id" Type="Edm.String" Nullable="false" />
-- <Property Name="bars" Type="Collection(self.bar)" />
-+ <NavigationProperty Name="bars" Type="Collection(self.bar)" ContainsTarget="true" />
+- <Property Name="keyCredentials" Type="Collection(self.keyCredential)" />
++ <NavigationProperty Name="keyCredentials" Type="Collection(self.keyCredential)" ContainsTarget="true" />
 </EntityType>
 
-- <ComplexType Name="bar">
-+ <EntityType Name="bar">
+- <ComplexType Name="keyCredential">
++ <EntityType Name="keyCredential">
 + <Key>
-+   <PropertyRef Name="prop1" />
++   <PropertyRef Name="keyId" />
 + </Key>
-  <Property Name="prop1" Type="Edm.String" />
-  <Property Name="prop2" Type="Edm.String" />
+  <Property Name="keyId" Type="Edm.Guid" />
+  <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
 -</ComplexType>
 +</EntityType>
 ```
 To maintain backwards compatibility **and** compliance with the OData standard, there are several semantic changes that the workload must address:
-1. Existing clients would have been able to `$select` the `bars` property.
-Now that `bars` is a navigation property, the [OData standard](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361040) specifies that its navigation link be returned when it is `$selected`:
+1. Existing clients would have been able to `$select` the `keyCredentials` property.
+Now that `keyCredentials` is a navigation property, the [OData standard](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361040) specifies that its navigation link be returned when it is `$selected`:
 
 > If the select item is a navigation property, then the corresponding navigation link is represented in the response.
 
-Because the previous behavior for `$select=bars` was to include the collection in the response, and because the standard dictates that the navigation link be included in the response, the new behavior is to include both:
+Because the previous behavior for `$select=keyCredentials` was to include the collection in the response, and because the standard dictates that the navigation link be included in the response, the new behavior is to include both:
 
 ```http
-GET /foos/{fooId}?$select=bars
+GET /applications/{applicationId}?$select=keyCredentials
 ```
 ```http
 200 OK
 {
-  "id": "{fooId}",
-  "bars": [
+  "id": "{applicationId}",
+  "keyCredentials": [
     {
-      "prop1": "some value",
-      "prop2": "another value"
+      "keyId": "30000000-0000-0000-0000-000000000000",
+      "endDateTime": "2012-12-03T07:16:23Z",
+      ...
     },
     ...
   ]
-  "bars@odata.navigationLink": "/foos('{fooId}')/bars"
+  "keyCredentials@odata.navigationLink": "/applications('{applicationId}')/keyCredentials"
 }
 ```
 
-2. The default behavior for structural collections is to include them in the response payload for their containing entity. If this was the behavior of `foo` before, it must be preserved by **auto-expanding** the `bars` property now that it is a navigation property (because the default behavior for navigation properties is to **not** expand them).
+2. The default behavior for structural collections is to include them in the response payload for their containing entity. If this was the behavior of `application` before, it must be preserved by **auto-expanding** the `keyCredentials` property now that it is a navigation property (because the default behavior for navigation properties is to **not** expand them).
 3. Structural collections are updated using `PATCH` requests to replace the entire contents of the collection. The new navigation property must preserve this behavior.
 
 TODO implement this in webapi
