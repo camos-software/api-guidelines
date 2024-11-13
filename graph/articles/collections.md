@@ -455,7 +455,7 @@ GET /applications/{applicationId}?$select=keyCredentials
       ...
     },
     ...
-  ]
+  ],
   "keyCredentials@odata.navigationLink": "/applications('{applicationId}')/keyCredentials"
 }
 ```
