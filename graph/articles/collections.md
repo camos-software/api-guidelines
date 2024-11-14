@@ -342,7 +342,7 @@ Take the following model with an entity type `application` that has a collection
 and a scenario arises that requires, for example, to remove individual `keyCredential`s from the collection. 
 There are two options forward: //// TODO do we want to offer both options, or just one?
 
-### 11.1 Side-by-side collection properties
+### 11.1 Side-by-side collection properties (for any collection of structural types)
 
 The model can be updated to have two collections side-by-side, deprecating the existing one:
 ```diff
@@ -422,7 +422,7 @@ HTTP/1.1 400 Bad Request
 TODO should this be a 409 conflict instead?
 TODO implement this in WebApi
 
-### 11.2 `$select` overloading
+### 11.2 Redefine as Entity Type (for collections of complex types)
 
 The model can be updated to simply switch the complex type for an entity type:
 ```diff
