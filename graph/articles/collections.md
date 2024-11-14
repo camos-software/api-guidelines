@@ -351,7 +351,19 @@ The model can be updated to have two collections side-by-side:
     <PropertyRef Name="id" />
   </Key>
   <Property Name="id" Type="Edm.String" Nullable="false" />
-  <Property Name="keyCredentials" Type="Collection(self.keyCredential)" />
+  <Property Name="keyCredentials" Type="Collection(self.keyCredential)">
++   <Annotation Term="Org.OData.Core.V1.Revisions">
++     <Collection>
++       <Record>
++         <PropertyValue Property = "Date" Date="2020-08-20"/>
++         <PropertyValue Property = "Version" String="2020-08/KeyCredentials"/>
++         <PropertyValue Property = "Kind" EnumMember="Org.OData.Core.V1.RevisionKind/Deprecated"/>
++         <PropertyValue Property = "Description" String="keyCredentials has been deprecated. Please use keyCredentialsAsEntities instead."/>
++         <PropertyValue Property = "RemovalDate" Date="2022-08-20"/>
++       </Record>
++     </Collection>
++   </Annotation>
++ </Property>
 + <NavigationProperty Name="keyCredentialsAsEntities" Type="Collection(self.keyCredentialAsEntity)" ContainsTarget="true" />
 </EntityType>
 
