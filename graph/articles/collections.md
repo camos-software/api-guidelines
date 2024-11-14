@@ -344,7 +344,7 @@ There are two options forward: //// TODO do we want to offer both options, or ju
 
 ### 11.1 Side-by-side collection properties
 
-The model can be updated to have two collections side-by-side:
+The model can be updated to have two collections side-by-side, deprecating the existing one:
 ```diff
 <EntityType Name="application">
   <Key>
@@ -387,7 +387,7 @@ DELETE /applications/{applicationId}/keyCredentialsAsEntities/{some_keyId}
 ```http
 HTTP/1.1 204 No Content
 ```
-The expectation is that `keyCredentials` and `keyCredentialsAsEntities` are treated as two "views" into the same data.
+While both properties exist on graph, the expectation is that `keyCredentials` and `keyCredentialsAsEntities` are treated as two "views" into the same data.
 To meet this expectation, workloads must:
 1. Keep the properties consistent between `keyCredential` and `keyCredentialAsEntity`.
 Any changes to one type must be reflected in the other type.
