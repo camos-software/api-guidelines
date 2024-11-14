@@ -473,6 +473,6 @@ GET /applications/{applicationId}?$select=keyCredentials
 ```
 
 2. The default behavior for structural collections is to include them in the response payload for their containing entity. If this was the behavior of `application` before, it must be preserved by **auto-expanding** the `keyCredentials` property now that it is a navigation property (because the default behavior for navigation properties is to **not** expand them).
-3. Structural collections are updated using `PATCH` requests to replace the entire contents of the collection. The new navigation property must preserve this behavior.
+3. Structural collections can be updated using a `PATCH` request to the containing entity to replace the entire contents of the collection. If the service supported such updates to the structural collection, then updates to the new navigation property must preserve this behavior.
 
 TODO implement this in webapi
