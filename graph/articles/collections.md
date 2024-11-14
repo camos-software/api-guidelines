@@ -48,7 +48,7 @@ GET https://graph.microsoft.com/beta/teamwork/devices/0f3ce432-e432-0f3c-32e4-3c
   "value": {
     "@odata.type": "#microsoft.graph.teamworkDevice",
     "id": "0f3ce432-e432-0f3c-32e4-3c0f32e43c0f",
-    "deviceType": "CollaborationBar",371
+    "deviceType": "CollaborationBar",
     "hardwareDetail": {
       "serialNumber": "0189",
       "uniqueId": "5abcdefgh",
