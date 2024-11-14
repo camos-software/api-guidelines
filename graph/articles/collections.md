@@ -319,7 +319,7 @@ Content-Type: application/json
 
 ## 11. Collections of structural types (complex types or primitive types)
 
-Collections of entity types are generally preferable to collections of structual types because collections of structural types must be updated as a single unit, meaning that they are overwritten entirely by new contents, rather than be updated relative to the existing contents. 
+Entity types are generally preferred for collections since complex types within a collection cannot be individually referenced. Collections of complex types, including any nested properties, must be updated as a single unit, entirely replacing the existing contents. Even if your API is read-only today, modeling it as a collection of entities gives you more flexibility in referencing individual members now and in the future. 
 Sometimes, structural collection properties are added to a type and then scenarios are discovered later that require a collection of entity types.
 Take the following model with an entity type `application` that has a collection of `keyCredential`s:
 
