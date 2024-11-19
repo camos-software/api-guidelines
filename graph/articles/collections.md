@@ -340,7 +340,7 @@ Take the following model with an entity type `application` that has a collection
 </ComplexType>
 ```
 and a scenario arises that requires, for example, to remove individual `keyCredential`s from the collection. 
-There are two options forward: //// TODO do we want to offer both options, or just one?
+There are two options forward:
 
 ### 11.1 Side-by-side collection properties (for any collection of structural types)
 
@@ -419,9 +419,6 @@ HTTP/1.1 400 Bad Request
 }
 ```
 
-TODO should this be a 409 conflict instead?
-TODO implement this in WebApi
-
 ### 11.2 Redefine as Entity Type (for collections of complex types)
 
 The model can be updated to simply switch the complex type for an entity type:
@@ -474,5 +471,3 @@ GET /applications/{applicationId}?$select=keyCredentials
 
 2. The default behavior for structural collections is to include them in the response payload for their containing entity. If this was the behavior of `application` before, it must be preserved by **auto-expanding** the `keyCredentials` property now that it is a navigation property (because the default behavior for navigation properties is to **not** expand them).
 3. Structural collections can be updated using a `PATCH` request to the containing entity to replace the entire contents of the collection. If the service supported such updates to the structural collection, then updates to the new navigation property must preserve this behavior.
-
-TODO implement this in webapi
