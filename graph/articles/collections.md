@@ -358,13 +358,13 @@ The model can be updated to have two collections side-by-side, deprecating the e
 +         <PropertyValue Property = "Date" Date="2020-08-20"/>
 +         <PropertyValue Property = "Version" String="2020-08/KeyCredentials"/>
 +         <PropertyValue Property = "Kind" EnumMember="Org.OData.Core.V1.RevisionKind/Deprecated"/>
-+         <PropertyValue Property = "Description" String="keyCredentials has been deprecated. Please use keyCredentialsAsEntities instead."/>
++         <PropertyValue Property = "Description" String="keyCredentials has been deprecated. Please use keyCredentials_v2 instead."/>
 +         <PropertyValue Property = "RemovalDate" Date="2022-08-20"/>
 +       </Record>
 +     </Collection>
 +   </Annotation>
 + </Property>
-+ <NavigationProperty Name="keyCredentialsAsEntities" Type="Collection(self.keyCredentialAsEntity)" ContainsTarget="true" />
++ <NavigationProperty Name="keyCredentials_v2" Type="Collection(self.keyCredential_v2)" ContainsTarget="true" />
 </EntityType>
 
 <ComplexType Name="keyCredential">
@@ -372,7 +372,7 @@ The model can be updated to have two collections side-by-side, deprecating the e
   <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
 </ComplexType>
 
-+<EntityType Name="keyCredentialAsEntity">
++<EntityType Name="keyCredential_v2">
 + <Key>
 +   <PropertyRef Name="keyId" />
 + </Key>
@@ -382,17 +382,17 @@ The model can be updated to have two collections side-by-side, deprecating the e
 ```
 Clients will now be able to refer to individual `keyCredential`s using `keyId` as a key, and they can now remove those `keyCredential`s using `DELETE` requests:
 ```http
-DELETE /applications/{applicationId}/keyCredentialsAsEntities/{some_keyId}
+DELETE /applications/{applicationId}/keyCredentials_v2/{some_keyId}
 ```
 ```http
 HTTP/1.1 204 No Content
 ```
-While both properties exist on graph, the expectation is that `keyCredentials` and `keyCredentialsAsEntities` are treated as two "views" into the same data.
+While both properties exist on graph, the expectation is that `keyCredentials` and `keyCredentials_v2` are treated as two "views" into the same data.
 To meet this expectation, workloads must:
-1. Keep the properties consistent between `keyCredential` and `keyCredentialAsEntity`.
+1. Keep the properties consistent between `keyCredential` and `keyCredential_v2`.
 Any changes to one type must be reflected in the other type.
 2. Reject requests that update both collections at the same time.
-A request that adds an item to `keyCredentialsAsEntities` while replacing the content of `keyCredentials` must rejected with a `400`, for example:
+A request that adds an item to `keyCredentials_v2` while replacing the content of `keyCredentials` must rejected with a `400`, for example:
 ```http
 PATCH /applications/{applicationId}
 {
@@ -402,7 +402,7 @@ PATCH /applications/{applicationId}
       "endDateTime": "2012-12-03T07:16:23Z"
     }
   ],
-  "keyCredentialsAsEntities@delta": [
+  "keyCredentials_v2@delta": [
     {
       "keyId": "20000000-0000-0000-0000-000000000000",
       "endDateTime": "2012-12-03T07:16:23Z"
@@ -415,7 +415,7 @@ HTTP/1.1 400 Bad Request
 {
   "error": {
     "code": "badRequest",
-    "message": "'keyCredentials' and 'keyCredentialsAsEntities' cannot be updated in the same request.",
+    "message": "'keyCredentials' and 'keyCredentials_v2' cannot be updated in the same request.",
 }
 ```
 
