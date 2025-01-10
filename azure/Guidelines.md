@@ -69,7 +69,7 @@ The Microsoft Azure Cloud platform exposes its APIs through the core building bl
 
 <a href="#http" name="http"></a>
 ### HTTP
-Azure services must adhere to the HTTP specification, [RFC7231](https://tools.ietf.org/html/rfc7231). This section further refines and constrains how service implementors should apply the constructs defined in the HTTP specification. It is therefore, important that you have a firm understanding of the following concepts:
+Azure services must adhere to the HTTP specification, [RFC 7231](https://tools.ietf.org/html/rfc7231). This section further refines and constrains how service implementors should apply the constructs defined in the HTTP specification. It is therefore, important that you have a firm understanding of the following concepts:
 
 - [Uniform Resource Locators (URLs)](#uniform-resource-locators-urls)
 - [HTTP Request / Response Pattern](#http-request--response-pattern)
@@ -120,7 +120,7 @@ https://<tenant>-<service-root>.<service>.<cloud>/...
 
 Examples:
 - Request URL: `https://blobstore.azure.net/contoso.com/account1/container1/blob2`
-- Response header ([RFC2557](https://datatracker.ietf.org/doc/html/rfc2557#section-4)): `content-location : https://contoso-dot-com-account1.blobstore.azure.net/container1/blob2`
+- Response header ([RFC 2557](https://datatracker.ietf.org/doc/html/rfc2557#section-4)): `content-location : https://contoso-dot-com-account1.blobstore.azure.net/container1/blob2`
 - GUID format: `https://00000000-0000-0000-C000-000000000046-account1.blobstore.azure.net/container1/blob2`
 
 <a href="#http-url-return-consistent-form" name="http-url-return-consistent-form">:white_check_mark:</a> **DO** return URLs in response headers/bodies in a consistent form regardless of the URL used to reach the resource. Either always a UUID for `<tenant>` or always a single verified domain.
@@ -186,12 +186,12 @@ Because information in the service URL, as well as the request / response, are s
 Data type | Document that string must be
 --------- | -------
 Boolean   | true / false (all lowercase)
-Integer   | -2<sup>53</sup>+1 to +2<sup>53</sup>-1 (for consistency with JSON limits on integers [RFC8259](https://datatracker.ietf.org/doc/html/rfc8259))
+Integer   | -2<sup>53</sup>+1 to +2<sup>53</sup>-1 (for consistency with JSON limits on integers [RFC 8259](https://datatracker.ietf.org/doc/html/rfc8259))
 Float     | [IEEE-754 binary64](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 String    | (Un)quoted?, max length, legal characters, case-sensitive, multiple delimiter
-UUID      | 123e4567-e89b-12d3-a456-426614174000 (no {}s, hyphens, case-insensitive) [RFC4122](https://datatracker.ietf.org/doc/html/rfc4122)
-Date/Time (Header) | Sun, 06 Nov 1994 08:49:37 GMT [RFC7231, Section 7.1.1.1](https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.1)
-Date/Time (Query parameter) | YYYY-MM-DDTHH:mm:ss.sssZ (with at most 3 digits of fractional seconds) [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339)
+UUID      | 123e4567-e89b-12d3-a456-426614174000 (no {}s, hyphens, case-insensitive) [RFC 4122](https://datatracker.ietf.org/doc/html/rfc4122)
+Date/Time (Header) | Sun, 06 Nov 1994 08:49:37 GMT [RFC 7231, Section 7.1.1.1](https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.1)
+Date/Time (Query parameter) | YYYY-MM-DDTHH:mm:ss.sssZ (with at most 3 digits of fractional seconds) [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339)
 Byte array | Base-64 encoded, max length
 Array      | One of a) a comma-separated list of values (preferred), or b) separate `name=value` parameter instances for each value of the array
 
@@ -209,7 +209,7 @@ If-Match            | Request    | "67ab43" or * (no quotes) (see [Conditional R
 If-None-Match       | Request    | "67ab43" or * (no quotes) (see [Conditional Requests](#conditional-requests))
 If-Modified-Since   | Request    | Sun, 06 Nov 1994 08:49:37 GMT (see [Conditional Requests](#conditional-requests))
 If-Unmodified-Since | Request    | Sun, 06 Nov 1994 08:49:37 GMT (see [Conditional Requests](#conditional-requests))
-date                | Both       | Sun, 06 Nov 1994 08:49:37 GMT (see [RFC7231, Section 7.1.1.2](https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.2))
+date                | Both       | Sun, 06 Nov 1994 08:49:37 GMT (see [RFC 7231, Section 7.1.1.2](https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.2))
 _content-type_      | Both       | application/merge-patch+json
 _content-length_    | Both       | 1024
 _x-ms-request-id_   | Response   | 4227cdc5-9f48-4e84-921a-10967cb785a0
@@ -227,9 +227,9 @@ retry-after         | Response   | 180 (see [RFC 7231, Section 7.1.3](https://da
 
 <a href="#http-header-values-case-sensitivity" name="http-header-values-case-sensitivity">:white_check_mark:</a> **DO** compare request header values using case-sensitivity if the header name requires it
 
-<a href="#http-header-date-values" name="http-header-date-values">:white_check_mark:</a> **DO** accept date values in headers in HTTP-Date format and return date values in headers in the IMF-fixdate format as defined in [RFC7231, Section 7.1.1.1](https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.1), e.g. "Sun, 06 Nov 1994 08:49:37 GMT".
+<a href="#http-header-date-values" name="http-header-date-values">:white_check_mark:</a> **DO** accept date values in headers in HTTP-Date format and return date values in headers in the IMF-fixdate format as defined in [RFC 7231, Section 7.1.1.1](https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.1), e.g. "Sun, 06 Nov 1994 08:49:37 GMT".
 
-Note: The RFC 7321 IMF-fixdate format is a "fixed-length and single-zone subset" of the RFC 1123 / RFC 5822 format, which means: a) year must be four digits, b) the seconds component of time is required, and c) the timezone must be GMT.
+Note: The RFC 7231 IMF-fixdate format is a "fixed-length and single-zone subset" of the RFC 1123 / RFC 5822 format, which means: a) year must be four digits, b) the seconds component of time is required, and c) the timezone must be GMT.
 
 <a href="#http-header-request-id" name="http-header-request-id">:white_check_mark:</a> **DO** create an opaque value that uniquely identifies the request and return this value in the `x-ms-request-id` response header.
 
@@ -281,7 +281,7 @@ Because of this, required fields can only be introduced in the 1st version of a 
 
 <a href="#rest-get-returns-json-body" name="rest-get-returns-json-body">:white_check_mark:</a> **DO** use GET for resource retrieval and return JSON in the response body
 
-<a href="#rest-patch-use-merge-patch" name="rest-patch-use-merge-patch">:white_check_mark:</a> **DO** create and update resources using PATCH [RFC5789] with JSON Merge Patch [(RFC7396)](https://datatracker.ietf.org/doc/html/rfc7396) request body.
+<a href="#rest-patch-use-merge-patch" name="rest-patch-use-merge-patch">:white_check_mark:</a> **DO** create and update resources using PATCH [RFC 5789] with JSON Merge Patch [(RFC 7396)](https://datatracker.ietf.org/doc/html/rfc7396) request body.
 
 <a href="#rest-put-for-create-or-replace" name="rest-put-for-create-or-replace">:white_check_mark:</a> **DO** use PUT with JSON for wholesale create/replace operations. **NOTE:** If a v1 client PUTs a resource; any fields introduced in V2+ should be reset to their default values (the equivalent to DELETE followed by PUT).
 
@@ -401,19 +401,19 @@ Services, and the clients that access them, may be written in multiple languages
 
 <a href="#json-integer-values" name="json-integer-values">:white_check_mark:</a> **DO** use integers within the acceptable range of JSON number.
 
-<a href="#json-specify-string-constraints" name="json-specify-string-constraints">:white_check_mark:</a> **DO** establish a well-defined contract for the format of strings. For example, determine maximum length, legal characters, case-(in)sensitive comparisons, etc. Where possible, use standard formats, e.g. RFC3339 for date/time.
+<a href="#json-specify-string-constraints" name="json-specify-string-constraints">:white_check_mark:</a> **DO** establish a well-defined contract for the format of strings. For example, determine maximum length, legal characters, case-(in)sensitive comparisons, etc. Where possible, use standard formats, e.g. RFC 3339 for date/time.
 
-<a href="#json-use-standard-string-formats" name="json-use-standard-string-formats">:white_check_mark:</a> **DO** use strings formats that are well-known and easily parsable/formattable by many programming languages, e.g. RFC3339 for date/time.
+<a href="#json-use-standard-string-formats" name="json-use-standard-string-formats">:white_check_mark:</a> **DO** use strings formats that are well-known and easily parsable/formattable by many programming languages, e.g. RFC 3339 for date/time.
 
 <a href="#json-should-be-round-trippable" name="json-should-be-round-trippable">:white_check_mark:</a> **DO** ensure that information exchanged between your service and any client is "round-trippable" across multiple programming languages.
 
-<a href="#json-date-time-is-rfc3339" name="json-date-time-is-rfc3339">:white_check_mark:</a> **DO** use [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339) for date/time.
+<a href="#json-date-time-is-rfc3339" name="json-date-time-is-rfc3339">:white_check_mark:</a> **DO** use [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for date/time.
 
 <a href="#json-durations-use-fixed-time-intervals" name="json-durations-use-fixed-time-intervals">:white_check_mark:</a> **DO** use a fixed time interval to express durations e.g., milliseconds, seconds, minutes, days, etc., and include the time unit in the property name e.g., `backupTimeInMinutes` or `ttlSeconds`.
 
-<a href="#json-rfc3339-time-intervals-allowed" name="json-rfc3339-time-intervals-allowed">:heavy_check_mark:</a> **YOU MAY** use [RFC3339 time intervals](https://wikipedia.org/wiki/ISO_8601#Durations) only when users must be able to specify a time interval that may change from month to month or year to year e.g., "P3M" represents 3 months no matter how many days between the start and end dates, or "P1Y" represents 366 days on a leap year. The value must be round-trippable.
+<a href="#json-rfc3339-time-intervals-allowed" name="json-rfc3339-time-intervals-allowed">:heavy_check_mark:</a> **YOU MAY** use [RFC 3339 time intervals](https://wikipedia.org/wiki/ISO_8601#Durations) only when users must be able to specify a time interval that may change from month to month or year to year e.g., "P3M" represents 3 months no matter how many days between the start and end dates, or "P1Y" represents 366 days on a leap year. The value must be round-trippable.
 
-<a href="#json-uuid-is-rfc4412" name="json-uuid-is-rfc4412">:white_check_mark:</a> **DO** use [RFC4122](https://datatracker.ietf.org/doc/html/rfc4122) for UUIDs.
+<a href="#json-uuid-is-rfc4412" name="json-uuid-is-rfc4412">:white_check_mark:</a> **DO** use [RFC 4122](https://datatracker.ietf.org/doc/html/rfc4122) for UUIDs.
 
 <a href="#json-may-nest-for-grouping" name="json-may-nest-for-grouping">:heavy_check_mark:</a> **YOU MAY** use JSON objects to group sub-fields together.
 
@@ -1141,7 +1141,7 @@ Designing an API for accessing a single file, depending on your scenario, is rel
 
 <a href="#byos-support-single-object" name="byos-support-single-object">:white_check_mark:</a> **DO** allow the customer to specify a URL path to a single Storage object if your service requires access to a single file.
 
-<a href="#byos-last-modified" name="byos-last-modified">:heavy_check_mark:</a> **YOU MAY** allow the customer to provide a [last-modified](https://datatracker.ietf.org/doc/html/rfc7232#section-2.2) timestamp (in RFC1123 format) for read-only files. This allows the client to specify exactly which version of the files your service should use.
+<a href="#byos-last-modified" name="byos-last-modified">:heavy_check_mark:</a> **YOU MAY** allow the customer to provide a [last-modified](https://datatracker.ietf.org/doc/html/rfc7232#section-2.2) timestamp (in RFC 7231 format) for read-only files. This allows the client to specify exactly which version of the files your service should use.
 When reading a file, your service passes this timestamp to Azure Storage using the [if-unmodified-since](https://datatracker.ietf.org/doc/html/rfc7232#section-3.4) request header. If the Storage operation fails with 412, the Storage object was modified and your service operation should return an appropriate 4xx status code and return the Storage error in your operation's 'inner-error' (see guideline above).
 
 <a href="#byos-folder-support" name="byos-folder-support">:white_check_mark:</a> **DO** allow the customer to specify a URL path to a logical folder (via prefix and delimiter) if your service requires access to multiple files (within this folder). For more information, see [List Blobs API](https://docs.microsoft.com/rest/api/storageservices/list-blobs)
