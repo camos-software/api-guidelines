@@ -16,6 +16,7 @@ Please ensure that you add an anchor tag to any new guidelines that you add and 
 
 | Date        | Notes                                                          |
 | ----------- | -------------------------------------------------------------- |
+| 2025-Mar-28 | Added guidelines about JSON ID and null values                 |
 | 2024-Mar-17 | Updated LRO guidelines                                         |
 | 2024-Jan-17 | Added guidelines on returning string offsets & lengths         |
 | 2023-May-12 | Explain service response for missing/unsupported `api-version` |
@@ -389,7 +390,9 @@ Example:
 
 <a href="#json-field-names-case-sensitivity" name="json-field-names-case-sensitivity">:white_check_mark:</a> **DO** treat JSON field names with case-sensitivity.
 
-<a href="#json-field-values-case-sensitivity" name="json-field-values-case-sensitivity">:white_check_mark:</a> **DO** treat JSON field values with case-sensitivity. There may be some exceptions (e.g. GUIDs) but avoid if at all possible.
+<a href="#json-field-values-case-sensitivity" name="json-field-values-case-sensitivity">:white_check_mark:</a> **DO** treat JSON field values with case-sensitivity. There may be some exceptions but avoid if at all possible.
+
+<a href="#json-field-values-id" name="json-field-values-ids">:white_check_mark:</a> **DO** treat JSON field value representing a unique ID as an opaque string value and compare them with case-sensitivity. For example, IDs are frequently [UUIDs](https://en.wikipedia.org/wiki/Universally_unique_identifier), [CUIDs](https://github.com/paralleldrive/cuid2), [Nano ID](https://blog.openapihub.com/en-us/what-is-nano-id-its-difference-from-uuid-as-unique-identifiers/), or other formats. The choice of ID format is a service implementation detail. Customer code should only ever need to get, store, and send these values and should never perform any other kind of parsing or interpretation of ID values.
 
 Services, and the clients that access them, may be written in multiple languages. To ensure interoperability, JSON establishes the "lowest common denominator" type system, which is always sent over the wire as UTF-8 bytes. This system is very simple and consists of three types:
 
@@ -399,9 +402,13 @@ Services, and the clients that access them, may be written in multiple languages
  Number  | Signed floating point (IEEE-754 binary64; int range: -2<sup>53</sup>+1 to +2<sup>53</sup>-1)
  String  | Used for everything else
 
+<a href="#json-null-response-values" name="json-null-response-values">:white_check_mark:</a> **DO NOT** send JSON fields with a null value from the service to the client. Instead, the service should just not send this field at all (this reduces payload size). Semantically, Azure services treat a missing field and a field with a value of null as identical. 
+
+<a href="#json-null-request-values" name="json-null-resquest-values">:white_check_mark:</a> **DO** accept JSON fields with a null value only for a PATCH operation with a JSON Merge Patch payload. A field with a value of null instructs the service to delete the field. If the field cannot be deleted, then return 400-BadRequest, else return the resource with the deleted field missing from the response payload (see bullet above).
+
 <a href="#json-integer-values" name="json-integer-values">:white_check_mark:</a> **DO** use integers within the acceptable range of JSON number.
 
-<a href="#json-specify-string-constraints" name="json-specify-string-constraints">:white_check_mark:</a> **DO** establish a well-defined contract for the format of strings. For example, determine maximum length, legal characters, case-(in)sensitive comparisons, etc. Where possible, use standard formats, e.g. RFC 3339 for date/time.
+<a href="#json-specify-string-constraints" name="json-specify-string-constraints">:white_check_mark:</a> **DO** establish a well-defined contract for the format of strings. For example, determine minimum length, maximum length, legal characters, case-(in)sensitive comparisons, etc. Where possible, use standard formats, e.g. RFC 3339 for date/time.
 
 <a href="#json-use-standard-string-formats" name="json-use-standard-string-formats">:white_check_mark:</a> **DO** use strings formats that are well-known and easily parsable/formattable by many programming languages, e.g. RFC 3339 for date/time.
 
