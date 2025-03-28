@@ -554,10 +554,10 @@ NOTE: It is a breaking change to add paging in the future
 ```json
 {
     "value": [
-       { "id": "Item 01", "etag": "\"abc\"", "price": 99.95, "sizes": null },
+       { "id": "Item 01", "etag": "\"abc\"", "price": 99.95, "size": "Medium" },
        { … },
        { … },
-       { "id": "Item 99", "etag": "\"def\"", "price": 59.99, "sizes": null }
+       { "id": "Item 99", "etag": "\"def\"", "price": 59.99, "size": "Large" }
     ],
     "nextLink": "{opaqueUrl}"
  }
