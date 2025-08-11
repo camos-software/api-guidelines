@@ -316,3 +316,158 @@ Content-Type: application/json
    "value": []
 }
 ```
+
+## 11. Collections of structural types (complex types or primitive types)
+
+Entity types are generally preferred for collections since complex types within a collection cannot be individually referenced. Collections of complex types, including any nested properties, must be updated as a single unit, entirely replacing the existing contents. Even if your API is read-only today, modeling it as a collection of entities gives you more flexibility in referencing individual members now and in the future. 
+Sometimes, structural collection properties are added to a type and then scenarios are discovered later that require a collection of entity types.
+Take the following model with an entity type `application` that has a collection of `keyCredential`s:
+
+```xml
+<EntityType Name="application">
+  <Key>
+    <PropertyRef Name="id" />
+  </Key>
+  <Property Name="id" Type="Edm.String" Nullable="false" />
+  <Property Name="keyCredentials" Type="Collection(self.keyCredential)" />
+  ...
+</EntityType>
+
+<ComplexType Name="keyCredential">
+  <Property Name="keyId" Type="Edm.Guid" />
+  <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
+  ...
+</ComplexType>
+```
+and a scenario arises that requires, for example, to remove individual `keyCredential`s from the collection. 
+There are two options forward:
+
+### 11.1 Side-by-side collection properties (for any collection of structural types)
+
+The model can be updated to have two collections side-by-side, deprecating the existing one:
+```diff
+<EntityType Name="application">
+  <Key>
+    <PropertyRef Name="id" />
+  </Key>
+  <Property Name="id" Type="Edm.String" Nullable="false" />
+  <Property Name="keyCredentials" Type="Collection(self.keyCredential)">
++   <Annotation Term="Org.OData.Core.V1.Revisions">
++     <Collection>
++       <Record>
++         <PropertyValue Property = "Date" Date="2020-08-20"/>
++         <PropertyValue Property = "Version" String="2020-08/KeyCredentials"/>
++         <PropertyValue Property = "Kind" EnumMember="Org.OData.Core.V1.RevisionKind/Deprecated"/>
++         <PropertyValue Property = "Description" String="keyCredentials has been deprecated. Please use keyCredentials_v2 instead."/>
++         <PropertyValue Property = "RemovalDate" Date="2022-08-20"/>
++       </Record>
++     </Collection>
++   </Annotation>
++ </Property>
++ <NavigationProperty Name="keyCredentials_v2" Type="Collection(self.keyCredential_v2)" ContainsTarget="true" />
+</EntityType>
+
+<ComplexType Name="keyCredential">
+  <Property Name="keyId" Type="Edm.Guid" />
+  <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
+</ComplexType>
+
++<EntityType Name="keyCredential_v2">
++ <Key>
++   <PropertyRef Name="keyId" />
++ </Key>
++ <Property Name="keyId" Type="Edm.Guid" />
++ <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
++</EntityType>
+```
+Clients will now be able to refer to individual `keyCredential`s using `keyId` as a key, and they can now remove those `keyCredential`s using `DELETE` requests:
+```http
+DELETE /applications/{applicationId}/keyCredentials_v2/{some_keyId}
+```
+```http
+HTTP/1.1 204 No Content
+```
+While both properties exist on graph, the expectation is that `keyCredentials` and `keyCredentials_v2` are treated as two "views" into the same data.
+To meet this expectation, workloads must:
+1. Keep the properties consistent between `keyCredential` and `keyCredential_v2`.
+Any changes to one type must be reflected in the other type.
+2. Reject requests that update both collections at the same time.
+A request that adds an item to `keyCredentials_v2` while replacing the content of `keyCredentials` must rejected with a `400`, for example:
+```http
+PATCH /applications/{applicationId}
+{
+  "keyCredentials": [
+    {
+      "keyId": "10000000-0000-0000-0000-000000000000",
+      "endDateTime": "2012-12-03T07:16:23Z"
+    }
+  ],
+  "keyCredentials_v2@delta": [
+    {
+      "keyId": "20000000-0000-0000-0000-000000000000",
+      "endDateTime": "2012-12-03T07:16:23Z"
+    }
+  ]
+}
+```
+```http
+HTTP/1.1 400 Bad Request
+{
+  "error": {
+    "code": "badRequest",
+    "message": "'keyCredentials' and 'keyCredentials_v2' cannot be updated in the same request.",
+}
+```
+
+### 11.2 Redefine as Entity Type (for collections of complex types)
+
+The model can be updated to simply switch the complex type for an entity type:
+```diff
+<EntityType Name="application">
+  <Key>
+    <PropertyRef Name="id" />
+  </Key>
+  <Property Name="id" Type="Edm.String" Nullable="false" />
+- <Property Name="keyCredentials" Type="Collection(self.keyCredential)" />
++ <NavigationProperty Name="keyCredentials" Type="Collection(self.keyCredential)" ContainsTarget="true" />
+</EntityType>
+
+- <ComplexType Name="keyCredential">
++ <EntityType Name="keyCredential">
++ <Key>
++   <PropertyRef Name="keyId" />
++ </Key>
+  <Property Name="keyId" Type="Edm.Guid" />
+  <Property Name="endDateTime" Type="Edm.DateTimeOffset" />
+-</ComplexType>
++</EntityType>
+```
+To maintain backwards compatibility **and** compliance with the OData standard, there are several semantic changes that the workload must address:
+1. Existing clients would have been able to `$select` the `keyCredentials` property.
+Now that `keyCredentials` is a navigation property, the [OData standard](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361040) specifies that its navigation link be returned when it is `$selected`:
+
+> If the select item is a navigation property, then the corresponding navigation link is represented in the response.
+
+Because the previous behavior for `$select=keyCredentials` was to include the collection in the response, and because the standard dictates that the navigation link be included in the response, the new behavior is to include both:
+
+```http
+GET /applications/{applicationId}?$select=keyCredentials
+```
+```http
+200 OK
+{
+  "id": "{applicationId}",
+  "keyCredentials": [
+    {
+      "keyId": "30000000-0000-0000-0000-000000000000",
+      "endDateTime": "2012-12-03T07:16:23Z",
+      ...
+    },
+    ...
+  ],
+  "keyCredentials@odata.navigationLink": "/applications('{applicationId}')/keyCredentials"
+}
+```
+
+2. The default behavior for structural collections is to include them in the response payload for their containing entity. If this was the behavior of `application` before, it must be preserved by **auto-expanding** the `keyCredentials` property now that it is a navigation property (because the default behavior for navigation properties is to **not** expand them).
+3. Structural collections can be updated using a `PATCH` request to the containing entity to replace the entire contents of the collection. If the service supported such updates to the structural collection, then updates to the new navigation property must preserve this behavior.
