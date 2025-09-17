@@ -9,31 +9,59 @@ The anchor tags within a section using a common prefix to ensure uniqueness with
 Please ensure that you add an anchor tag to any new guidelines that you add and maintain the naming convention.
 -->
 
-## History
+## Table of Contents
 
-<details>
-  <summary>Expand change history</summary>
-
-| Date        | Notes                                                          |
-| ----------- | -------------------------------------------------------------- |
-| 2025-Mar-28 | Added guidelines about JSON ID and null values                 |
-| 2024-Mar-17 | Updated LRO guidelines                                         |
-| 2024-Jan-17 | Added guidelines on returning string offsets & lengths         |
-| 2023-May-12 | Explain service response for missing/unsupported `api-version` |
-| 2023-Apr-21 | Update/clarify guidelines on POST method repeatability         |
-| 2023-Apr-07 | Update/clarify guidelines on polymorphism                      |
-| 2022-Sep-07 | Updated URL guidelines for DNS Done Right                      |
-| 2022-Jul-15 | Update guidance on long-running operations                     |
-| 2022-May-11 | Drop guidance on version discovery                             |
-| 2022-Mar-29 | Add guidelines about using durations                           |
-| 2022-Mar-25 | Update guideline for date values in headers to follow RFC 7231 |
-| 2022-Feb-01 | Updated error guidance                                         |
-| 2021-Sep-11 | Add long-running operations guidance                           |
-| 2021-Aug-06 | Updated Azure REST Guidelines per Azure API Stewardship Board. |
-| 2020-Jul-31 | Added service advice for initial versions                      |
-| 2020-Mar-31 | 1st public release of the Azure REST API Guidelines            |
-
-</details>
+- [Introduction](#introduction)
+  - [Prescriptive Guidance](#prescriptive-guidance)
+- [Building Blocks: HTTP, REST, & JSON](#building-blocks-http-rest--json)
+  - [HTTP](#http)
+    - [Uniform Resource Locators (URLs)](#uniform-resource-locators-urls)
+    - [HTTP Request / Response Pattern](#http-request--response-pattern)
+      - [Exactly Once Behavior = Client Retries & Service Idempotency](#exactly-once-behavior--client-retries--service-idempotency)
+      - [HTTP Return Codes](#http-return-codes)
+    - [HTTP Query Parameters and Header Values](#http-query-parameters-and-header-values)
+  - [REpresentational State Transfer (REST)](#representational-state-transfer-rest)
+    - [Resource Schema & Field Mutability](#resource-schema--field-mutability)
+      - [Create / Update / Replace Processing Rules](#create--update--replace-processing-rules)
+    - [Handling Errors](#handling-errors)
+  - [JSON](#json)
+    - [Enums & SDKs (Client libraries)](#enums--sdks-client-libraries)
+    - [Polymorphic types](#polymorphic-types)
+- [Common API Patterns](#common-api-patterns)
+  - [Performing an Action](#performing-an-action)
+  - [Collections](#collections)
+    - [Query options](#query-options)
+    - [filter](#filter)
+      - [filter operators](#filter-operators)
+      - [Operator examples](#operator-examples)
+    - [orderby](#orderby)
+      - [Considerations for sorting with pagination](#considerations-for-sorting-with-pagination)
+      - [skip](#skip)
+      - [top](#top)
+      - [maxpagesize](#maxpagesize)
+  - [API Versioning](#api-versioning)
+    - [Use Extensible Enums](#use-extensible-enums)
+  - [Deprecating Behavior Notification](#deprecating-behavior-notification)
+  - [Repeatability of requests](#repeatability-of-requests)
+  - [Long-Running Operations & Jobs](#long-running-operations--jobs)
+    - [Patterns to Initiate a Long-Running Operation](#patterns-to-initiate-a-long-running-operation)
+    - [Create or replace operation with additional long-running processing](#create-or-replace-operation-with-additional-long-running-processing)
+    - [DELETE LRO pattern](#delete-lro-pattern)
+    - [LRO action on a resource pattern](#lro-action-on-a-resource-pattern)
+    - [LRO action with no related resource pattern](#lro-action-with-no-related-resource-pattern)
+    - [The Status Monitor Resource](#the-status-monitor-resource)
+    - [Obtaining status and results of long-running operations](#obtaining-status-and-results-of-long-running-operations)
+    - [Pattern to List Status Monitors](#pattern-to-list-status-monitors)
+  - [Bring your own Storage (BYOS)](#bring-your-own-storage-byos)
+    - [Handling 'downstream' errors](#handling-downstream-errors)
+    - [Working with files](#working-with-files)
+      - [Single file access](#single-file-access)
+  - [Conditional Requests](#conditional-requests)
+    - [Conditional Request behavior](#conditional-request-behavior)
+    - [Computing ETags](#computing-etags)
+  - [Returning String Offsets & Lengths (Substrings)](#returning-string-offsets--lengths-substrings)
+  - [Distributed Tracing & Telemetry](#distributed-tracing--telemetry)
+- [Final thoughts](#final-thoughts)
 
 ## Introduction
 
