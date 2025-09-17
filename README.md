@@ -1,19 +1,13 @@
-# Microsoft REST API Guidelines
-Thank you for your interest in the Microsoft REST API Guidelines. If you have landed here, you're probably interested in learning about APIs. If so, you are in the right place!
-We publish these guidelines here with the aim of fostering dialogue and learning in the API community at large. We further hope that these guidelines might encourage other organizations to create guidelines that are appropriate for them and in turn, if they're able, to publish theirs.
+# Azure REST API Guidance
+When building software components that will be used by developers to build other software, providing APIs that are easy to use, fit to purpose, scalable, maintainable, and consistent across your product can make the difference between success and failure for your software. 
 
-### Guidance for Azure service teams
-Azure service teams should reference the companion documents, [Azure REST API Guidelines](./azure/Guidelines.md) and [Considerations for Service Design](./azure/ConsiderationsForServiceDesign.md), when building or modifying their services. These documents provide a refined set of guidance targeted specifically for Azure services. For more information, please refer to the [README](./azure/README.md) in the Azure folder.
+Designing powerful APIs with strong defaults, consistent behavior across related projects, and ease of use for developers arises from putting yourself in the shoes of the person using your interfaces, and taking their concerns to heart. The APIs you ship can have a dramatic long term effect on the health of your software product, and that is why the **REST API Stewardship Board** is here to help! We have published a collection of best practices, REST guidance, and OpenAPI style guidelines to help you create an amazing developer experience.
+* [Considerations for Service Design](ConsiderationsForServiceDesign.md)
+* [REST API Guidelines](Guidelines.md)
+* [OpenAPI Style Guidelines](https://github.com/Azure/azure-api-style-guide/blob/main/README.md)
+* [Versioning policy for Azure services, SDKs, and CLI tools](https://learn.microsoft.com/en-us/azure/developer/intro/azure-service-sdk-tool-versioning)
+* [Breaking Changes](https://aka.ms/azapi/breakingchanges) <sub>Note: Internal Microsoft link</sub>
 
-### Guidance for Microsoft Graph service teams
-Graph service teams should reference the companion document, [Microsoft Graph REST API Guidelines](./graph/GuidelinesGraph.md) when building or modifying their services. This document and the associated pattern catalog provide a refined set of guidance targeted specifically for Microsoft Graph services.
+You can reach out to us via [email](mailto://azureapirbcore@microsoft.com) or in our [Teams](https://teams.microsoft.com/l/team/19%3a3ebb18fded0e47938f998e196a52952f%40thread.tacv2/conversations?groupId=1a10b50c-e870-4fe0-8483-bf5542a8d2d8&tenantId=72f988bf-86f1-41af-91ab-2d7cd011db47) channel.
 
-[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-
-## Code of Conduct
-This project adopts the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-## This repository
-This repository contains a collection of documents and related materials supporting the overall Microsoft REST API Guidelines initiative. To contribute to this repository, see the [contribution guidelines][contribution-guidance].
-
-[contribution-guidance]: CONTRIBUTING.md
+<sub>Note: The Teams channel is internal MS.</sup>
